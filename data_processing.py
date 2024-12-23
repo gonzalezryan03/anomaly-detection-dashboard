@@ -37,8 +37,8 @@ def preprocess_data(data):
     # 1. Handle missing values
    data.dropna(inplace=True)
 
-   # 2. Feature selection
-   features = ['Dst Port', 'Protocol', 'Flow Duration', 'Tot Fwd Pkts', 'Tot Bwd']
+   # 2. Feature selection (Initial Subset)
+   features = ['Dst Port', 'Protocol', 'Flow Duration', 'Tot Fwd Pkts', 'Tot Bwd Pkts', 'Fwd Pkt Len Max', 'Fwd Pkt Len Min', 'Bwd Pkt Len Max', 'Bwd Pkt Len Min', 'Flow Byts/s', 'Flow Pkts/s']
    data = data[features]
 
    # 3. Data Transformation
