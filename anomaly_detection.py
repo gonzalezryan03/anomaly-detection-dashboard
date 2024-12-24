@@ -1,29 +1,35 @@
-from sklearn.ensemble import IsolationForest
-from sklearn.metrics import precision_score, recall_score, f1_score
+from sklearn.linear_model import LogisticRegression
+from sklearn.metrics import precision_score, recall_score, f1_score, accuracy_score
 from sklearn.model_selection import train_test_split
 from data_processing import load_data, preprocess_data
 
 def detect_anomalies(data):
-    # Implement chosen anomaly detection algorithm here
-    model = IsolationForest()
-    model.fit(data)
-    anomalies = model.predict(data)  # Example output
-    return anomalies
+    """
+    Detects anomalies in the data using a machine learning model.
 
-def evaluate_anomalies(true_labels, predicted_labels):
-    # Implement evaluation metrics here
-    precision = precision_score(true_labels, predicted_labels)
-    recall = recall_score(true_labels, predicted_labels)
-    f1 = f1_score(true_labels, predicted_labels)
-    return precision, recall, f1
+    Args:
+        data: The data to be used for anomaly detection
+    """
+    # 1. Train-test split
+    y = data[' Label'] # Target variable
+    X = preprocess_data(data) # Features
+    y = y[X.index] # Filter y to match the indices of X
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
+    # 2. Train a machine learning model
+    model = LogisticRegression(max_iter=10000)
+    model.fit(X_train, y_train)
+
+    # 3. Make predictions
+    y_pred = model.predict(X_test)
+    accuracy = accuracy_score(y_test, y_pred)
+    print(f"Accuracy: {accuracy:.4f}")
+
+
+    anomaly_predictions = model.predict(preprocess_data(data.drop(' Label', axis=1)))
+    return anomaly_predictions
 
 # Example usage:
 folder_path = '/Users/ryangonzalez/anomaly-detection-dashboard/dataset'
 data = load_data(folder_path)
-processed_data = preprocess_data(data)
-
-X_train, X_test, y_train, y_test = train_test_split(processed_data, data['Label'], test_size=0.2, random_state=42)
-anomaly_predictions = detect_anomalies(data)
-precision, recall, f1 = evaluate_anomalies(data['Label'], anomaly_predictions)
-print(f"Precision: {precision}, Recall: {recall}, F1 Score: {f1}")
+anomaly_predictions = detect_anomalies(data.copy())

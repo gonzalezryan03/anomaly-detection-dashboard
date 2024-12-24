@@ -1,6 +1,7 @@
 import pandas as pd
+import numpy as np
 import glob
-from sklearn.preprocessing import StandardScaler
+from sklearn.preprocessing import MinMaxScaler
 
 
 def load_data(folder_path):
@@ -33,16 +34,17 @@ def preprocess_data(data):
     Returns:
         A Pandas DataFrame containing preprocessed data
    """
-    
-    # 1. Handle missing values
+   
+   # 1. Handle missing values & inf values
+   data.replace([np.inf, -np.inf], np.nan, inplace=True)
    data.dropna(inplace=True)
 
    # 2. Feature selection (Initial Subset)
-   features = ['Dst Port', 'Protocol', 'Flow Duration', 'Tot Fwd Pkts', 'Tot Bwd Pkts', 'Fwd Pkt Len Max', 'Fwd Pkt Len Min', 'Bwd Pkt Len Max', 'Bwd Pkt Len Min', 'Flow Byts/s', 'Flow Pkts/s']
+   features = [' Destination Port', ' Flow Duration', ' Total Fwd Packets', ' Total Backward Packets', 'Total Length of Fwd Packets', ' Fwd Packet Length Max',  ' Fwd Packet Length Min', ' Total Length of Bwd Packets', 'Bwd Packet Length Max', ' Bwd Packet Length Min', 'Flow Bytes/s', ' Flow Packets/s']
    data = data[features]
 
    # 3. Data Transformation
-   scaler = StandardScaler()
+   scaler = MinMaxScaler()
    data[features] = scaler.fit_transform(data[features])
 
    return data
